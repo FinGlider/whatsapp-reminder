@@ -14,8 +14,8 @@ const getUpcomingClasses = async () => {
     }
     const query = `
       SELECT sp.*, s.mobile
-      FROM \`glider-uat\`.samples s
-      JOIN \`glider-uat\`.studentprofile sp
+      FROM \`glider_live\`.samples s
+      JOIN \`glider_live\`.studentprofile sp
       ON s.student_id = sp.student_id
       WHERE s.role = 'Student'
       AND CURDATE() BETWEEN sp.start_date AND sp.end_date
