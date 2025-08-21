@@ -114,7 +114,8 @@ app.use("/appointment", departmentRoutes);
 
 sequelize.sync().then(() => {
   console.log("Database connected");
-  app.listen(3015, () => console.log("Server running on port 3015"));
+  const PORT = process.env.PORT || 3015; // Use PORT from .env, fallback to 3015
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 });
 
 // function
@@ -127,16 +128,24 @@ function isRequestSignatureValid(req) {
   }
 
   const signatureHeader = req.get("x-hub-signature-256");
+  if (!signatureHeader || !signatureHeader.startsWith("sha256=")) {
+    console.error("Error: Missing or invalid signature header");
+    return false;
+  }
+
   const signatureBuffer = Buffer.from(
     signatureHeader.replace("sha256=", ""),
-    "utf-8"
+    "hex" // <-- Use hex encoding
   );
 
   const hmac = crypto.createHmac("sha256", APP_SECRET);
   const digestString = hmac.update(req.rawBody).digest("hex");
-  const digestBuffer = Buffer.from(digestString, "utf-8");
+  const digestBuffer = Buffer.from(digestString, "hex"); // <-- Use hex encoding
 
-  if (!crypto.timingSafeEqual(digestBuffer, signatureBuffer)) {
+  if (
+    signatureBuffer.length !== digestBuffer.length ||
+    !crypto.timingSafeEqual(digestBuffer, signatureBuffer)
+  ) {
     console.error("Error: Request Signature did not match");
     return false;
   }
