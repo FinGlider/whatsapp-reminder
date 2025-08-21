@@ -1,0 +1,70 @@
+{
+  "data_api_version": "3.0",
+  "version": "7.0",
+  "routing_model": {
+    "RECOMMEND": []
+  },
+  "screens": [
+    {
+      "id": "RECOMMEND",
+      "title": "Travel Route",
+      "terminal": true,
+      "data": {
+        "city_list": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "title": { "type": "string" }
+            }
+          },
+          "__example__": [
+            { "id": "delhi", "title": "Delhi" },
+            { "id": "mumbai", "title": "Mumbai" }
+          ]
+        }
+      },
+      "layout": {
+        "type": "SingleColumnLayout",
+        "children": [
+          {
+            "type": "Form",
+            "name": "flow_path",
+            "children": [
+              {
+                "type": "TextSubheading",
+                "text": "Source"
+              },
+              {
+                "type": "Dropdown",
+                "label": "Source",
+                "name": "source_city",
+                "data-source": "${data.city_list}",
+                "required": true
+              },
+              {
+                "type": "TextSubheading",
+                "text": "Destination"
+              },
+              {
+                "type": "Dropdown",
+                "label": "Destination",
+                "name": "destination_city",
+                "data-source": "${data.city_list}",
+                "required": true
+              },
+              {
+                "type": "Footer",
+                "label": "Submit",
+                "on-click-action": {
+                  "name": "complete"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
