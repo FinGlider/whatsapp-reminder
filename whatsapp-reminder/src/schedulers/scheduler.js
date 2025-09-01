@@ -39,7 +39,7 @@ const getUpcomingClasses = async () => {
         AND bd.status_id = 2
         AND CURDATE() BETWEEN bd.start_date AND bd.end_date
         AND FIND_IN_SET(DAYNAME(CURDATE()), bd.class_days)
-        AND bd.utc_start_time BETWEEN UTC_TIME() + INTERVAL 50 MINUTE
+        AND bd.utc_start_time BETWEEN UTC_TIME() + INTERVAL 10 MINUTE
                                  AND UTC_TIME() + INTERVAL 1 HOUR;
     `;
 
