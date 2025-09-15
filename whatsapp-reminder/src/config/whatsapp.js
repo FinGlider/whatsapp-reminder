@@ -1,22 +1,18 @@
 require("dotenv").config();
 const axios = require("axios");
-const { WhatsAppCredential } = require("../models"); // Import the model
 
-const sendWhatsAppMessage = async (projectName, phoneNumber, otpCode) => {
+const sendWhatsAppMessage = async (
+  phoneNumberId,
+  accessToken,
+  phoneNumber,
+  otpCode
+) => {
   try {
-    // 🔍 Fetch WhatsApp credentials from the database based on project name
-    const credentials = await WhatsAppCredential.findOne({
-      where: { projectName },
-    });
-
-    if (!credentials) {
-      console.error(
-        `No WhatsApp credentials found for project: ${projectName}`
-      );
+    // Validate credentials
+    if (!phoneNumberId || !accessToken) {
+      console.error("Missing WhatsApp credentials");
       return false;
     }
-
-    const { phoneNumberId, accessToken } = credentials;
 
     const response = await axios.post(
       `https://graph.facebook.com/v21.0/${phoneNumberId}/messages`,

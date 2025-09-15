@@ -7,6 +7,16 @@ const { scheduleReminders } = require("./schedulers/scheduler");
 const app = express();
 app.use(express.json());
 
+// Import and use routes
+const otpRoutes = require("./routes/otpRoutes");
+
+const whatsappCredentialRoutes = require("./routes/whatsappCredentialRoutes");
+
+// Setup routes
+app.use("/api", otpRoutes);
+
+app.use("/api", whatsappCredentialRoutes);
+
 app.get("/", (req, res) => {
   res.send("WhatsApp Reminder Service is running.");
 });
