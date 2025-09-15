@@ -1,17 +1,19 @@
-const { OTP } = require("../models"); // Correct import
 const { sendWhatsAppMessage } = require("../config/whatsapp");
-const { sendSMS } = require("../config/twilio");
 
 exports.sendOTP = async (req, res) => {
   try {
-    const { projectName, phoneNumber, otpCode } = req.body;
+    const { phoneNumberId, accessToken, phoneNumber, otpCode } = req.body;
 
-    if (!projectName || !phoneNumber || !otpCode) {
-      return res.status(400).json({ message: "Missing required fields" });
+    if (!phoneNumberId || !accessToken || !phoneNumber || !otpCode) {
+      return res.status(400).json({
+        message:
+          "Missing required fields: phoneNumberId, accessToken, phoneNumber and otpCode are required",
+      });
     }
 
     const success = await sendWhatsAppMessage(
-      projectName,
+      phoneNumberId,
+      accessToken,
       phoneNumber,
       otpCode
     );
@@ -26,30 +28,6 @@ exports.sendOTP = async (req, res) => {
   } catch (error) {
     console.error("Error sending OTP:", error);
     return res.status(500).json({ message: "Internal server error" });
-  }
-};
-
-exports.generateOTP = async (req, res) => {
-  const { phoneNumber } = req.body;
-  const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-  const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // Expires in 5 minutes
-
-  try {
-    await OTP.create({ phoneNumber, otpCode, expiresAt, isUsed: false });
-
-    // Send OTP via WhatsApp
-    const whatsappSent = await sendWhatsAppMessage(phoneNumber, otpCode);
-
-    if (whatsappSent) {
-      return res.json({ message: "OTP sent via WhatsApp" });
-    } else {
-      // If WhatsApp fails, send OTP via SMS
-      await sendSMS(phoneNumber, otpCode);
-      return res.json({ message: "OTP sent via SMS (fallback)" });
-    }
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Error generating OTP" });
   }
 };
 
